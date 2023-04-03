@@ -18,6 +18,10 @@ class GRIDFARM_API AGridFarmGameModeBase : public AMechanicalGameModeBase
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	AGridManager* GridManager;
+
 	
 public:
 

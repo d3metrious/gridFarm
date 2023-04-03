@@ -98,7 +98,7 @@ void AGridManager::CreateSoil()
 	const auto Mechanism = UMachine::ObtainMechanism(GetWorld());
 
 	FCellData newCellData;
-	int i=0;
+	int i = 0;
 	for (int x = -GridSize.X; x < GridSize.X; x++)
 	{
 		for (int y = -GridSize.Y; y < GridSize.Y; y++)
@@ -158,20 +158,16 @@ int AGridManager::GetCellAxis(const float &Value)
 
 FVector2D AGridManager::GetCellCenter(const FIntPoint& Cell)
 {
-	FVector2D cellCenter;
-	cellCenter.X = FMath::Sign(Cell.X) * (FMath::Abs(Cell.X) * GridCellSize);
-	cellCenter.Y = FMath::Sign(Cell.Y) * (FMath::Abs(Cell.Y) * GridCellSize);
-	return cellCenter;
+	return FVector2D(FMath::Sign(Cell.X) * (FMath::Abs(Cell.X) * GridCellSize),
+					FMath::Sign(Cell.Y) * (FMath::Abs(Cell.Y) * GridCellSize));
 }
 
 FVector2D AGridManager::GetCenterOfArea(const FIntPoint& Cell, const FIntPoint Size)
 {
 	auto cellCenter = GetCellCenter(Cell);
 
-	FVector2D areaCenter;
-	areaCenter.X = (Size.X % 2 == 0) ? cellCenter.X - (GridCellSize * 0.5f) : cellCenter.X;
-	areaCenter.Y = (Size.Y % 2 == 0) ? cellCenter.Y - (GridCellSize * 0.5f) : cellCenter.Y;
-	return areaCenter;
+	return FVector2D((Size.X % 2 == 0) ? cellCenter.X - (GridCellSize * 0.5f) : cellCenter.X,
+					((Size.Y % 2 == 0) ? cellCenter.Y - (GridCellSize * 0.5f) : cellCenter.Y));
 
 }
 

@@ -45,7 +45,7 @@ void AActivateToolBase::UpdateTool()
 void AActivateToolBase::NewCellHighlighted()
 {
 	if (Mesh){
-		FIntPoint toolSize = (ToolData.GetRow<FToolObjectData>(FString("Tool Data")))->ToolSize;
+		FIntPoint toolSize = (ToolData.GetRow<FToolObjectData>("Tool Data"))->ToolSize;
 		Mesh->SetWorldLocation(GridManager->GetCurrentToolLocation(toolSize));
 	}
 }
