@@ -81,10 +81,10 @@ void AGridManager::UpdateGridValues()
 	playerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), false, hitResult);
 	HitLocationCamera = hitResult.Location;
 
-	auto currentCell = GetCellFromWorldLocation(hitResult.Location);
+	FIntPoint currentCell = GetCellFromWorldLocation(hitResult.Location);
 	if (currentCell != HitCell) {
 		HitCell = currentCell;
-		OnNewCellHighlightedDelegate.Broadcast(HitCell);
+		OnNewCellHighlightedDelegate.Broadcast();
 	}
 
 
@@ -129,10 +129,6 @@ int AGridManager::GetWeightedRandomSoilIndex()
 	return (SoilTypes[index].SpawnChance > FMath::RandRange(0, 100)) ? index : 0;
 }
 
-void AGridManager::NewCellHighlighted(FIntPoint NewCell)
-{
-
-}
 
 void AGridManager::EnablePlantTool(const FName &ToolRow)
 {
@@ -143,7 +139,7 @@ void AGridManager::EnablePlantTool(const FName &ToolRow)
 			FActorSpawnParameters SpawnInfo;
 			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			GetWorld()->SpawnActor<AActivateToolBase>(ActiveToolRow->ActiveToolClass->StaticClass(), HitLocationCamera, FRotator(0.0f), SpawnInfo);
+			GetWorld()->SpawnActor<AActivateToolBase>(ActiveToolRow->ActiveToolClass, HitLocationCamera, FRotator(0.0f), SpawnInfo);
 		}
 	}
 
@@ -196,12 +192,18 @@ FVector AGridManager::GetCellLocation(const FIntPoint& Cell)
 
 }
 
-FVector AGridManager::GetCurrentToolLocation() {
+FVector AGridManager::GetCurrentToolLocation(const FIntPoint &Size) {
 	
-	
-	
-	//auto areaCenter = GetCenterOfArea;
-	return FVector();
+	auto cellCenter = GetCenterOfArea(HitCell, Size);
+	FHitResult Hit;
+	FCollisionQueryParams queryParams;
+	bool foundZ = GetWorld()->
+		LineTraceSingleByChannel(Hit,
+			FVector(cellCenter.X, cellCenter.Y, HitLocationCamera.Z + 3000.0f),
+			FVector(cellCenter.X, cellCenter.Y, HitLocationCamera.Z - 3000.0f),
+			ECC_Camera, queryParams);
+
+	return FVector(cellCenter.X, cellCenter.Y, foundZ ? Hit.Location.Z : 0);
 
 }
 

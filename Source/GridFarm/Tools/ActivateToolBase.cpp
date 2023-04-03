@@ -1,5 +1,4 @@
 #include "ActivateToolBase.h"
-#include "../GridManager.h"
 #include "../Data/Structs.h"
 
 // Sets default values
@@ -12,10 +11,12 @@ AActivateToolBase::AActivateToolBase()
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	RootComponent = Root;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("GridMesh");
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	if (Mesh) {
 		Mesh->SetupAttachment(RootComponent);
-	}
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Mesh->SetMobility(EComponentMobility::Movable);
+		}
 }
 
 // Called when the game starts or when spawned
@@ -24,7 +25,7 @@ void AActivateToolBase::BeginPlay()
 	Super::BeginPlay();
 	GridManager = AGridManager::GetInstance();
 	if(GridManager){
-		GridManager->OnNewCellHighlightedDelegate.AddDynamic(this, NewCellHighlighted);
+		GridManager->OnNewCellHighlightedDelegate.AddUniqueDynamic(this, &ThisClass::NewCellHighlighted);
 
 		//ToolData = GridManager->ToolDataTable->get
 	}
@@ -41,13 +42,11 @@ void AActivateToolBase::UpdateTool()
 
 }
 
-void AActivateToolBase::NewCellHighlighted(FIntPoint NewCell)
+void AActivateToolBase::NewCellHighlighted()
 {
-	FVector location = GridManager->GetCenterOfArea(NewCell, FIntPoint(1,1) );
-							//ToolData->GetRow<FToolObjectData>(const FString("Tool Data"))->ToolSize);
-	location.Z = GridManager->GetCellLocation(NewCell).Z;
-
-	Mesh->SetWorldLocation(location);
-
+	if (Mesh){
+		FIntPoint toolSize = (ToolData.GetRow<FToolObjectData>(FString("Tool Data")))->ToolSize;
+		Mesh->SetWorldLocation(GridManager->GetCurrentToolLocation(toolSize));
+	}
 }
 

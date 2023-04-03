@@ -31,7 +31,7 @@ struct FToolObjectData : public FTableRowBase{
 	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActivateToolBase* ActiveToolClass;
+	TSubclassOf<AActivateToolBase> ActiveToolClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActivateToolBase* PlaceableObjectClass;

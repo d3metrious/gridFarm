@@ -13,6 +13,9 @@
 class UStaticMeshComponent;
 DECLARE_LOG_CATEGORY_EXTERN(CustomLog, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNewCellSignature);
+
+
 
 USTRUCT(BlueprintType)
 struct GRIDFARM_API FCellData {
@@ -139,9 +142,6 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewCellSignature, FIntPoint, NewCell);
-	UFUNCTION(BlueprintCallable)
-	virtual void NewCellHighlighted(FIntPoint NewCell);
 
 	UPROPERTY(BlueprintAssignable)
 	FNewCellSignature OnNewCellHighlightedDelegate;
@@ -163,7 +163,7 @@ public:
 
 	FVector GetCellLocation(const FIntPoint &Cell);
 
-	FVector GetCurrentToolLocation();
+	FVector GetCurrentToolLocation(const FIntPoint& Size);
 
 	//
 	

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../GridManager.h"
 #include "ActivateToolBase.generated.h"
 
 UCLASS()
@@ -8,15 +9,18 @@ class GRIDFARM_API AActivateToolBase : public AActor
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Grid, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AGridManager* GridManager;
 public:
 	
 	UPROPERTY()
 	USceneComponent* Root;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Grid, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDataTableRowHandle ToolData;
@@ -35,7 +39,8 @@ public:
 
 	virtual void UpdateTool();
 
-	void NewCellHighlighted(FIntPoint NewCell);
+	UFUNCTION()
+	void NewCellHighlighted();
 
 
 };

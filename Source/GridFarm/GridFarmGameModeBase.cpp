@@ -29,9 +29,9 @@ void AGridFarmGameModeBase::UpdateSoil()
 
 			Soil.Water =FMath::Clamp(Soil.Water + ChangeAmount,0,100);
 			// Too slow
-			const auto GridManager = AGridManager::GetInstance();
+			//const auto GridManager = AGridManager::GetInstance();
 
-			GridManager->SoilMeshComponent->SetCustomDataValue(Indexable.Index, 1, Soil.Water/100, true);
+			//GridManager->SoilMeshComponent->SetCustomDataValue(Indexable.Index, 1, Soil.Water/100, true);
 
 		},1, BaseBatchSize);
 
