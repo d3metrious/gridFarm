@@ -18,10 +18,7 @@ public:
 	template <typename T>
 	static int GetRandomIndexFromArray(TArray<T> Array);
 
-	FVector2D GetCenterOfArea(const FIntPoint &CenterCell, const int &SizeX, const int &SizeY);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FVector2D GetCellCenter(const FIntPoint &Cell);
 };
 
 template <typename T>

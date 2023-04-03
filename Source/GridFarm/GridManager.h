@@ -139,9 +139,9 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewCellSignature, FIntPoint*, NewCell);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewCellSignature, FIntPoint, NewCell);
 	UFUNCTION(BlueprintCallable)
-	virtual void NewCellHighlighted(FIntPoint* NewCell);
+	virtual void NewCellHighlighted(FIntPoint NewCell);
 
 	UPROPERTY(BlueprintAssignable)
 	FNewCellSignature OnNewCellHighlightedDelegate;
@@ -157,11 +157,15 @@ public:
 	}
 
 
-	FVector2D AGridManager::GetCellCenter(const FIntPoint& Cell);
+	FVector2D GetCellCenter(const FIntPoint& Cell);
 
-	FVector2D AGridManager::GetCenterOfArea(const FIntPoint &Cell, const FIntPoint SizeY);
+	FVector2D GetCenterOfArea(const FIntPoint &Cell, const FIntPoint SizeY);
 
-	FVector AGridManager::GetCellLocation(const FIntPoint &Cell);
+	FVector GetCellLocation(const FIntPoint &Cell);
+
+	FVector GetCurrentToolLocation();
+
+	//
 	
 
 

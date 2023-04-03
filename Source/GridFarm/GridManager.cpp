@@ -84,7 +84,7 @@ void AGridManager::UpdateGridValues()
 	auto currentCell = GetCellFromWorldLocation(hitResult.Location);
 	if (currentCell != HitCell) {
 		HitCell = currentCell;
-		OnNewCellHighlightedDelegate.Broadcast(&HitCell);
+		OnNewCellHighlightedDelegate.Broadcast(HitCell);
 	}
 
 
@@ -129,7 +129,7 @@ int AGridManager::GetWeightedRandomSoilIndex()
 	return (SoilTypes[index].SpawnChance > FMath::RandRange(0, 100)) ? index : 0;
 }
 
-void AGridManager::NewCellHighlighted(FIntPoint* NewCell)
+void AGridManager::NewCellHighlighted(FIntPoint NewCell)
 {
 
 }
@@ -177,13 +177,31 @@ FVector2D AGridManager::GetCenterOfArea(const FIntPoint& Cell, const FIntPoint S
 	areaCenter.Y = (Size.Y % 2 == 0) ? cellCenter.Y - (GridCellSize * 0.5f) : cellCenter.Y;
 	return areaCenter;
 
-
 }
+
+
 
 FVector AGridManager::GetCellLocation(const FIntPoint& Cell)
 {
+	auto cellCenter = GetCellCenter(Cell);
 	FHitResult Hit;
-	//GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Camera, QueryParams);
+	FCollisionQueryParams queryParams;
+	bool foundZ = GetWorld()->
+		LineTraceSingleByChannel(Hit, 
+			FVector(cellCenter.X, cellCenter.Y, HitLocationCamera.Z + 3000.0f),
+			FVector(cellCenter.X, cellCenter.Y, HitLocationCamera.Z - 3000.0f),
+			ECC_Camera, queryParams);
+
+	return FVector(cellCenter.X, cellCenter.Y, foundZ ? Hit.Location.Z : 0);
+
+}
+
+FVector AGridManager::GetCurrentToolLocation() {
+	
+	
+	
+	//auto areaCenter = GetCenterOfArea;
+	return FVector();
 
 }
 

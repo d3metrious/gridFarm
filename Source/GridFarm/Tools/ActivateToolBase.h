@@ -8,7 +8,18 @@ class GRIDFARM_API AActivateToolBase : public AActor
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	AGridManager* GridManager;
+public:
+	
+	UPROPERTY()
+	USceneComponent* Root;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Grid, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FDataTableRowHandle ToolData;
 
 public:
 	// Sets default values for this empty's properties
@@ -24,7 +35,7 @@ public:
 
 	virtual void UpdateTool();
 
-	void NewCellHighlighted(FIntPoint* NewCell);
+	void NewCellHighlighted(FIntPoint NewCell);
 
 
 };
