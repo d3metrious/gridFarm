@@ -7,14 +7,16 @@
 #include <Components/InstancedStaticMeshComponent.h>
 #include "Materials/MaterialInstanceDynamic.h"
 #include "GridLibrary.h"
+#include <Engine/DataTable.h>
 #include "GridManager.generated.h"
 
 class UStaticMeshComponent;
 DECLARE_LOG_CATEGORY_EXTERN(CustomLog, Log, All);
 
+
 USTRUCT(BlueprintType)
 struct GRIDFARM_API FCellData {
-	GENERATED_BODY();
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FSubjectHandle SoilHandle;
@@ -119,7 +121,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Session)
 	TMap<FIntPoint, FCellData> CellMap;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Data)
+	class UDataTable* ToolDataTable;
 
 	
 protected:
@@ -136,12 +139,30 @@ protected:
 
 public:
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewCellSignature, FIntPoint*, NewCell);
+	UFUNCTION(BlueprintCallable)
+	virtual void NewCellHighlighted(FIntPoint* NewCell);
+
+	UPROPERTY(BlueprintAssignable)
+	FNewCellSignature OnNewCellHighlightedDelegate;
+
+
+	UFUNCTION(BlueprintCallable)
+	void EnablePlantTool(const FName &ToolRow);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static AGridManager* GetInstance()
 	{
 		return Instance;
 	}
 
+
+	FVector2D AGridManager::GetCellCenter(const FIntPoint& Cell);
+
+	FVector2D AGridManager::GetCenterOfArea(const FIntPoint &Cell, const FIntPoint SizeY);
+
+	FVector AGridManager::GetCellLocation(const FIntPoint &Cell);
+	
 
 
 

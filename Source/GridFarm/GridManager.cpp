@@ -3,6 +3,11 @@
 #include "Data/Enums.h"
 #include "Traits/Indexable.h"
 #include "GridFarmGameModeBase.h"
+#include <GameFramework/Actor.h>
+#include <Engine/World.h>
+#include "Tools/Placeable/PlaceableBase.h"
+#include "Tools/ActivateToolBase.h"
+#include "Data/Structs.h"
 
 DEFINE_LOG_CATEGORY(CustomLog);
 
@@ -76,22 +81,17 @@ void AGridManager::UpdateGridValues()
 	playerController->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), false, hitResult);
 	HitLocationCamera = hitResult.Location;
 
-	HitCell = GetCellFromWorldLocation(hitResult.Location);
+	auto currentCell = GetCellFromWorldLocation(hitResult.Location);
+	if (currentCell != HitCell) {
+		HitCell = currentCell;
+		OnNewCellHighlightedDelegate.Broadcast(&HitCell);
+	}
 
 
 
 }
 
-FIntPoint AGridManager::GetCellFromWorldLocation(const FVector &Location)
-{
-	return FIntPoint(GetCellAxis(Location.X), GetCellAxis(Location.Y));
-}
 
-int AGridManager::GetCellAxis(const float &Value)
-{
-	float relativeLocation = Value / GridCellSize;
-	return (FMath::Abs(round(relativeLocation)) * FMath::Sign(round(relativeLocation)));
-}
 
 void AGridManager::CreateSoil()
 {
@@ -127,5 +127,63 @@ int AGridManager::GetWeightedRandomSoilIndex()
 {
 	auto index = UGridLibrary::GetRandomIndexFromArray(SoilTypes);
 	return (SoilTypes[index].SpawnChance > FMath::RandRange(0, 100)) ? index : 0;
+}
+
+void AGridManager::NewCellHighlighted(FIntPoint* NewCell)
+{
+
+}
+
+void AGridManager::EnablePlantTool(const FName &ToolRow)
+{
+	if (ToolDataTable) {
+		FToolObjectData* ActiveToolRow = ToolDataTable->FindRow<FToolObjectData>(ToolRow, "Active Tool Class", true);
+
+		if(ActiveToolRow){
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			GetWorld()->SpawnActor<AActivateToolBase>(ActiveToolRow->ActiveToolClass->StaticClass(), HitLocationCamera, FRotator(0.0f), SpawnInfo);
+		}
+	}
+
+}
+
+FIntPoint AGridManager::GetCellFromWorldLocation(const FVector &Location)
+{
+	return FIntPoint(GetCellAxis(Location.X), GetCellAxis(Location.Y));
+}
+
+int AGridManager::GetCellAxis(const float &Value)
+{
+	float relativeLocation = Value / GridCellSize;
+	return (FMath::Abs(round(relativeLocation)) * FMath::Sign(round(relativeLocation)));
+}
+
+FVector2D AGridManager::GetCellCenter(const FIntPoint& Cell)
+{
+	FVector2D cellCenter;
+	cellCenter.X = FMath::Sign(Cell.X) * (FMath::Abs(Cell.X) * GridCellSize);
+	cellCenter.Y = FMath::Sign(Cell.Y) * (FMath::Abs(Cell.Y) * GridCellSize);
+	return cellCenter;
+}
+
+FVector2D AGridManager::GetCenterOfArea(const FIntPoint& Cell, const FIntPoint Size)
+{
+	auto cellCenter = GetCellCenter(Cell);
+
+	FVector2D areaCenter;
+	areaCenter.X = (Size.X % 2 == 0) ? cellCenter.X - (GridCellSize * 0.5f) : cellCenter.X;
+	areaCenter.Y = (Size.Y % 2 == 0) ? cellCenter.Y - (GridCellSize * 0.5f) : cellCenter.Y;
+	return areaCenter;
+
+
+}
+
+FVector AGridManager::GetCellLocation(const FIntPoint& Cell)
+{
+	FHitResult Hit;
+	//GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Camera, QueryParams);
+
 }
 
